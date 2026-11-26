@@ -9,3 +9,4 @@ dist/
 *.env
 packages/api/.env
 packages/widget/dist
+shopify.app.toml
