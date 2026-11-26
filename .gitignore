@@ -7,6 +7,5 @@ dist/
 .cursor/
 .gemini/
 *.env
-!.env.example
 packages/api/.env
 packages/widget/dist
