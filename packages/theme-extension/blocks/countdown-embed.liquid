@@ -1,0 +1,67 @@
+{% comment %}
+  Countdown Timer app embed - injects the countdown widget on product pages.
+  Enable in Theme settings → App embeds → Countdown Timer (Embed).
+  Set API URL to your public API base URL (not localhost).
+{% endcomment %}
+
+{% if template.name == 'product' and block.settings.api_url != blank %}
+  <div
+    id="helixo-countdown-embed"
+    class="helixo-countdown-root"
+    data-shop="{{ shop.permanent_domain }}"
+    data-product-id="{{ product.id }}"
+    data-collection-ids="{{ product.collections | map: 'id' | join: ',' }}"
+    data-api-url="{{ block.settings.api_url | strip }}"
+    style="min-height: 50px;"
+    {{ block.shopify_attributes }}
+  ><span style="color:#666;font-size:14px;">Loading countdown…</span></div>
+  <script>
+    (function() {
+      var root = document.getElementById('helixo-countdown-embed');
+      if (!root) return;
+      var apiUrl = ('{{ block.settings.api_url | strip }}').replace(/\/$/, '');
+      var scriptUrl = {% if block.settings.widget_url != blank %}'{{ block.settings.widget_url }}'{% else %}apiUrl + '/widget/countdown.js'{% endif %};
+      fetch(scriptUrl, { headers: { 'ngrok-skip-browser-warning': '1' } })
+        .then(function(r) { return r.text(); })
+        .then(function(code) {
+          if (!code || code.trim().length < 100) throw new Error('Invalid script');
+          if (code.trim().substring(0, 50).indexOf('<') !== -1) {
+            root.innerHTML = '<span style="color:#b98900;font-size:14px;">Countdown: server returned a page instead of the script. Check API URL (use https) and that ngrok + API are running.</span>';
+            return;
+          }
+          var script = document.createElement('script');
+          script.textContent = code;
+          document.head.appendChild(script);
+          if (window.HelixoCountdown && window.HelixoCountdown.mount) {
+            window.HelixoCountdown.mount(root);
+          } else {
+            root.innerHTML = '<span style="color:#999;font-size:14px;">Countdown widget could not start.</span>';
+          }
+        })
+        .catch(function(err) {
+          root.innerHTML = '<span style="color:#b98900;font-size:14px;">Countdown: could not load script. Check API URL and that ngrok + API are running. (CORS or network error)</span>';
+        });
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Countdown Timer (Embed)",
+  "target": "body",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "API URL",
+      "info": "Your backend API base URL (e.g. https://your-app.com). Required. Do not use localhost — use a public URL (deployed API or ngrok)."
+    },
+    {
+      "type": "text",
+      "id": "widget_url",
+      "label": "Widget script URL",
+      "info": "Optional: full URL to countdown.js if different from API URL + /widget/countdown.js"
+    }
+  ]
+}
+{% endschema %}

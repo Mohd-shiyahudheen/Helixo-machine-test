@@ -1,0 +1,66 @@
+{% comment %}
+  Countdown Timer block - injects the Preact widget.
+  Pass shop domain and product id to the widget.
+  Uses block.id so multiple blocks on the same page each get a unique root.
+{% endcomment %}
+
+{% assign countdown_root_id = 'helixo-countdown-root-' | append: block.id %}
+<div
+  id="{{ countdown_root_id }}"
+  class="helixo-countdown-root"
+  data-shop="{{ shop.permanent_domain }}"
+  data-product-id="{{ product.id | default: block.settings.product_id }}"
+  data-collection-ids="{{ product.collections | map: 'id' | join: ',' }}"
+  data-api-url="{{ block.settings.api_url | default: 'https://your-api.com' }}"
+  style="min-height: 50px;"
+  {{ block.shopify_attributes }}
+></div>
+
+{% if block.settings.api_url != blank %}
+  <script>
+    (function() {
+      var root = document.getElementById('{{ countdown_root_id }}');
+      if (!root) return;
+      var script = document.createElement('script');
+      {% if block.settings.widget_url != blank %}
+      script.src = '{{ block.settings.widget_url }}';
+      {% else %}
+      script.src = '{{ block.settings.api_url | strip | append: '/widget/countdown.js' }}';
+      {% endif %}
+      script.async = true;
+      script.onload = function() {
+        if (window.HelixoCountdown && window.HelixoCountdown.mount) {
+          window.HelixoCountdown.mount(root);
+        }
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Countdown Timer",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "API URL",
+      "info": "Backend API base URL (e.g. https://your-app.com)"
+    },
+    {
+      "type": "text",
+      "id": "widget_url",
+      "label": "Widget script URL",
+      "info": "Optional: full URL to countdown.js if different from API"
+    },
+    {
+      "type": "text",
+      "id": "product_id",
+      "label": "Product ID override",
+      "info": "Leave blank on product page to use current product"
+    }
+  ]
+}
+{% endschema %}

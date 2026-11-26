@@ -1,0 +1,14 @@
+{
+  "name": "Countdown Timer",
+  "settings": {
+    "api_url": {
+      "label": "API URL"
+    },
+    "widget_url": {
+      "label": "Widget script URL"
+    },
+    "product_id": {
+      "label": "Product ID override"
+    }
+  }
+}

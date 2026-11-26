@@ -1,0 +1,122 @@
+
+{% comment %}
+  Helixo Countdown Timer Shopify product app block.
+  Loads the Preact widget through fetch with the ngrok bypass header.
+{% endcomment %}
+
+{% assign countdown_root_id = 'helixo-countdown-root-' | append: block.id %}
+
+<div
+  id="{{ countdown_root_id }}"
+  class="helixo-countdown-root"
+  data-shop="{{ shop.permanent_domain }}"
+  data-product-id="{{ product.id | default: block.settings.product_id }}"
+  data-collection-ids="{{ product.collections | map: 'id' | join: ',' }}"
+  data-api-url="{{ block.settings.api_url | escape }}"
+  style="min-height: 50px;"
+  {{ block.shopify_attributes }}
+></div>
+
+{% if block.settings.api_url != blank %}
+<script>
+(function () {
+  var rootId = {{ countdown_root_id | json }};
+  var root = document.getElementById(rootId);
+
+  if (!root || root.dataset.helixoLoading === 'true' ||
+      root.dataset.helixoLoaded === 'true') {
+    return;
+  }
+
+  root.dataset.helixoLoading = 'true';
+
+  var apiUrl = {{ block.settings.api_url | strip | json }}.replace(/\/+$/, '');
+  var widgetUrl = {{ block.settings.widget_url | strip | json }};
+
+  var scriptUrl = widgetUrl || apiUrl + '/widget/countdown.js';
+
+  fetch(scriptUrl, {
+    method: 'GET',
+    headers: {
+      'ngrok-skip-browser-warning': '1'
+    }
+  })
+  .then(function (response) {
+    if (!response.ok) {
+      throw new Error('Widget request failed: HTTP ' + response.status);
+    }
+
+    var contentType = response.headers.get('content-type') || '';
+
+    if (
+      contentType.indexOf('javascript') === -1 &&
+      contentType.indexOf('ecmascript') === -1
+    ) {
+      throw new Error('Expected JavaScript but received: ' + contentType);
+    }
+
+    return response.text();
+  })
+  .then(function (code) {
+    if (!code || code.trim().length < 100 || /^\s*</.test(code)) {
+      throw new Error('Invalid countdown JavaScript response');
+    }
+
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.textContent = code;
+
+    document.head.appendChild(script);
+
+    if (
+      window.HelixoCountdown &&
+      typeof window.HelixoCountdown.mount === 'function'
+    ) {
+      window.HelixoCountdown.mount(root);
+      root.dataset.helixoLoaded = 'true';
+    } else {
+      throw new Error('HelixoCountdown.mount function not found');
+    }
+
+    root.dataset.helixoLoading = 'false';
+  })
+  .catch(function (error) {
+    console.error('[Helixo Countdown]', error);
+
+    root.innerHTML =
+      '<span style="color:#b98900;font-size:14px;">' +
+      'Countdown could not load. Please check the API connection.' +
+      '</span>';
+
+    root.dataset.helixoLoading = 'false';
+  });
+})();
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Countdown Timer",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "API URL",
+      "info": "Backend API base URL (e.g. https://your-app.com)"
+    },
+    {
+      "type": "text",
+      "id": "widget_url",
+      "label": "Widget script URL",
+      "info": "Optional: full URL to countdown.js if different from API"
+    },
+    {
+      "type": "text",
+      "id": "product_id",
+      "label": "Product ID override",
+      "info": "Leave blank on product page to use current product"
+    }
+  ]
+}
+{% endschema %}
