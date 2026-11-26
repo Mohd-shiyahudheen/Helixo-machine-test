@@ -3,9 +3,9 @@ import { getRemainingFixed, getRemainingEvergreen, pad, isUrgent } from "./count
 import { ensureEvergreenEndTime } from "./evergreen";
 
 const SIZE_STYLES = {
-  small: { fontSize: "13px", padding: "14px 18px", minHeight: "88px", maxWidth: "280px" },
-  medium: { fontSize: "15px", padding: "20px 24px", minHeight: "110px", maxWidth: "340px" },
-  large: { fontSize: "18px", padding: "24px 28px", minHeight: "130px", maxWidth: "400px" },
+  small: { fontSize: "13px", padding: "14px 18px", minHeight: "88px" },
+  medium: { fontSize: "15px", padding: "20px 24px", minHeight: "110px" },
+  large: { fontSize: "18px", padding: "24px 28px", minHeight: "130px" },
 };
 
 const URGENCY_CSS = `
@@ -102,15 +102,14 @@ export default function Countdown({ timer, onExpired }) {
           boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
           boxSizing: "border-box",
           width: "100%",
-          maxWidth: sizeStyle.maxWidth,
-          marginLeft: "auto",
+          maxWidth: "100%",
         }}
       >
         <div
           style={{
             fontWeight: 600,
             lineHeight: 1.4,
-            maxWidth: "22ch",
+            maxWidth: "100%",
           }}
         >
           {headline}
