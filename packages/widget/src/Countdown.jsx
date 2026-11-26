@@ -3,9 +3,9 @@ import { getRemainingFixed, getRemainingEvergreen, pad, isUrgent } from "./count
 import { ensureEvergreenEndTime } from "./evergreen";
 
 const SIZE_STYLES = {
-  small: { fontSize: "13px", padding: "8px 12px", minHeight: "42px" },
-  medium: { fontSize: "16px", padding: "10px 16px", minHeight: "50px" },
-  large: { fontSize: "20px", padding: "14px 20px", minHeight: "62px" },
+  small: { fontSize: "13px", padding: "14px 18px", minHeight: "88px", maxWidth: "280px" },
+  medium: { fontSize: "15px", padding: "20px 24px", minHeight: "110px", maxWidth: "340px" },
+  large: { fontSize: "18px", padding: "24px 28px", minHeight: "130px", maxWidth: "400px" },
 };
 
 const URGENCY_CSS = `
@@ -97,30 +97,37 @@ export default function Countdown({ timer, onExpired }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: "4px",
-          borderRadius: "6px",
+          gap: "12px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
           boxSizing: "border-box",
           width: "100%",
+          maxWidth: sizeStyle.maxWidth,
+          marginLeft: "auto",
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            flexWrap: "wrap",
             fontWeight: 600,
+            lineHeight: 1.4,
+            maxWidth: "22ch",
           }}
         >
-          <span>{headline}</span>
-          <span style={{ fontVariantNumeric: "tabular-nums", letterSpacing: "0.04em" }}>
-            {remaining.days > 0 ? `${remaining.days}d ` : ""}
-            {pad(remaining.hours)}:{pad(remaining.minutes)}:{pad(remaining.seconds)}
-          </span>
+          {headline}
+        </div>
+        <div
+          style={{
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "0.04em",
+            fontWeight: 600,
+            fontSize: "1.05em",
+          }}
+        >
+          {remaining.days > 0 ? `${remaining.days}d ` : ""}
+          {pad(remaining.hours)}:{pad(remaining.minutes)}:{pad(remaining.seconds)}
         </div>
         {timer.description ? (
-          <div style={{ fontSize: "0.8em", opacity: 0.9 }}>{timer.description}</div>
+          <div style={{ fontSize: "0.85em", opacity: 0.85 }}>{timer.description}</div>
         ) : null}
       </div>
     </>
