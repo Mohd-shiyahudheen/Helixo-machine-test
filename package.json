@@ -1,0 +1,23 @@
+{
+  "name": "helixo-countdown",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shopify Countdown Timer App",
+  "workspaces": [
+    "packages/admin",
+    "packages/api",
+    "packages/widget",
+    "packages/theme-extension"
+  ],
+  "scripts": {
+    "api": "npm run dev -w api",
+    "admin": "npm run dev -w admin",
+    "widget": "npm run build -w widget",
+    "build:widget": "npm run build -w widget",
+    "test": "npm run test -w api --if-present && npm run test -w widget --if-present",
+    "tunnel": "npx --yes ngrok http 3000"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

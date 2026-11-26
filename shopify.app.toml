@@ -1,0 +1,17 @@
+# Shopify app config – used by Shopify CLI for deploy.
+# Link to your Partner app: shopify app config link
+# Deploy theme extension: shopify app deploy
+
+name = "Countdown Timer"
+client_id = "700adc3da420bc283d51d6d1e6e9f83a"
+application_url = "https://localhost:5174"
+embedded = true
+
+# Theme extension lives in packages/theme-extension
+extension_directories = ["packages/theme-extension"]
+
+[auth]
+redirect_urls = ["https://localhost:5174/api/auth/callback"]
+
+[webhooks]
+api_version = "2024-01"
