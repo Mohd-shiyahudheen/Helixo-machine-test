@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdown Widget Test</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 24px; max-width: 600px; margin: 0 auto; }
+    h1 { font-size: 1.25rem; }
+    .info { background: #f4f6f8; padding: 12px 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; color: #202223; }
+    #helixo-countdown-root { margin: 16px 0; min-height: 50px; }
+  </style>
+</head>
+<body>
+  <h1>Countdown widget test</h1>
+  <p>This page simulates a product page. If your API is running and you have a timer for the product below, the countdown will appear.</p>
+  <div class="info">
+    <strong>Shop:</strong> <span id="shop-display">shiyageneralstore.myshopify.com</span><br />
+    <strong>Product ID:</strong> <span id="product-display">9015813701862</span>
+  </div>
+
+  <div
+    id="helixo-countdown-root"
+    data-shop="shiyageneralstore.myshopify.com"
+    data-product-id="9015813701862"
+    data-api-url="http://localhost:3000"
+    style="min-height: 50px;"
+  ></div>
+
+  <script>
+    (function() {
+      var root = document.getElementById('helixo-countdown-root');
+      if (!root) return;
+      var script = document.createElement('script');
+      script.src = 'http://localhost:3000/widget/countdown.js';
+      script.async = true;
+      script.onload = function() {
+        if (window.HelixoCountdown && window.HelixoCountdown.mount) {
+          window.HelixoCountdown.mount(root);
+        } else {
+          root.innerHTML = '<p style="color:#6d7175;">Widget loaded but HelixoCountdown.mount not found. Did you run <code>npm run build:widget</code>?</p>';
+        }
+      };
+      script.onerror = function() {
+        root.innerHTML = '<p style="color:#b98900;">Could not load widget. Is the API running on port 3000? Run <code>npm run api</code> and ensure the widget is built.</p>';
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+</body>
+</html>
